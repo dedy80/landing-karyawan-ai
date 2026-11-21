@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kebijakan Privasi | LKP HRedu Global Mandiri</title>
+  <meta name="description" content="Kebijakan privasi ai.hredu.id: data yang dikumpulkan (kode klik iklan, UTM, catatan klik WhatsApp), tujuan, cookie 90 hari, dan hak Anda atas data pribadi.">
+  <meta name="theme-color" content="#0B2545">
+  <link rel="canonical" href="https://ai.hredu.id/kebijakan-privasi.html">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .policy-bar { background: var(--white); border-bottom: 1px solid var(--line-soft); }
+    .policy-bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; }
+    .policy-bar img { height: 42px; width: auto; }
+    .policy-bar a.back { color: var(--navy); font-weight: 700; text-decoration: none; }
+    .policy-bar a.back:hover { color: var(--gold-dark); }
+    .policy { padding: 40px 0 72px; }
+    .policy-card { max-width: 800px; margin-inline: auto; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 32px 28px; }
+    .policy h1 { font-size: clamp(1.6rem, 4.5vw, 2.2rem); line-height: 1.2; margin: 0 0 6px; color: var(--navy); }
+    .policy .updated { margin: 0 0 22px; color: #5b6b80; font-size: 14px; }
+    .policy h2 { font-size: 1.15rem; margin: 26px 0 8px; color: var(--navy); }
+    .policy p, .policy li { margin: 0 0 10px; }
+    .policy ul { padding-left: 22px; margin: 0 0 10px; }
+    .policy a { color: var(--navy); font-weight: 650; }
+    .policy a:hover { color: var(--gold-dark); }
+    .kf { background: var(--gold-soft); border-radius: 4px; padding: 0 5px; font-weight: 700; }
+    @media (max-width: 560px) { .policy { padding: 20px 0 56px; } .policy-card { padding: 22px 16px; } }
+  </style>
+<!-- ===== HRedu Ads Tracking (DRAFT) — tempel di <head> ai.hredu.id, sedini mungkin ===== -->
+<!-- Placeholder yang tersisa: URL Apps Script (lihat blok KONFIGURASI). Konversi = impor offline, tidak ada label konversi di tag. -->
+
+<!-- 1) Google tag (gtag.js) untuk akun Google Ads 770-873-8188. Dimuat oleh skrip di bawah hanya jika ID sudah diganti. -->
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- KONFIGURASI ---------- */
+  var AW_ID          = 'AW-527986159';            // Google tag ID akun Google Ads 770-873-8188 (dari Ads Specialist)
+  var APPS_SCRIPT_URL = '[APPS_SCRIPT_URL]';       // URL Web App Apps Script (.../exec)
+  var PREFIX         = 'AI-';                      // awalan kode referensi
+  var DAYS           = 90;
+  var STORE_KEY      = 'hredu_ads';                // nama cookie + key localStorage
+  var CLICK_KEYS     = ['gclid', 'gbraid', 'wbraid'];
+  var UTM_KEYS       = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+  var WA_RE          = /^https?:\/\/(wa\.me|api\.whatsapp\.com)\//i;
+
+  var MS = DAYS * 864e5;
+  var awReady = AW_ID.indexOf('XXXX') === -1;
+  var apsReady = /^https:\/\/script\.google(usercontent)?\.com\//.test(APPS_SCRIPT_URL);
+
+  /* ---------- Google tag ---------- */
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+  if (awReady) {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(AW_ID);
+    document.head.appendChild(s);
+    gtag('js', new Date());
+    gtag('config', AW_ID);
+  }
+
+  /* ---------- Penyimpanan 90 hari (cookie first-party + localStorage) ---------- */
+  function getCookie(n) {
+    var m = document.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+  function setCookie(n, v) {
+    var c = n + '=' + encodeURIComponent(v) + '; max-age=' + (DAYS * 86400) + '; path=/; SameSite=Lax';
+    if (location.protocol === 'https:') c += '; Secure';
+    document.cookie = c;
+  }
+  function parse(s) { try { var o = JSON.parse(s); return o && typeof o === 'object' ? o : null; } catch (e) { return null; } }
+  function fresh(o) { return o && o.t && (Date.now() - o.t) < MS ? o : null; }
+  function load() {
+    var c = null, l = null;
+    try { c = fresh(parse(getCookie(STORE_KEY))); } catch (e) {}
+    try { l = fresh(parse(localStorage.getItem(STORE_KEY))); } catch (e) {}
+    if (c && l) return l.t > c.t ? l : c;
+    return c || l || { t: 0, v: {} };
+  }
+  function save(o) {
+    var s = JSON.stringify(o);
+    try { setCookie(STORE_KEY, s); } catch (e) {}
+    try { localStorage.setItem(STORE_KEY, s); } catch (e) {}
+  }
+
+  var params = new URLSearchParams(location.search);
+  var data = load(), v = data.v || {}, changed = false;
+  if (CLICK_KEYS.some(function (k) { return params.get(k); })) {      // klik iklan baru menimpa yang lama
+    CLICK_KEYS.forEach(function (k) { v[k] = (params.get(k) || '').slice(0, 200); });
+    changed = true;
+  }
+  if (UTM_KEYS.some(function (k) { return params.get(k); })) {
+    UTM_KEYS.forEach(function (k) { v[k] = (params.get(k) || '').slice(0, 100); });
+    changed = true;
+  }
+  if (changed) { data = { t: Date.now(), v: v }; save(data); }
+  else if (data.t) { save(data); }                                     // sinkronkan cookie & localStorage
+
+  function clickId() { return v.gclid || v.gbraid || v.wbraid || ''; }
+  var REF = clickId() ? PREFIX + clickId().slice(-8) : PREFIX + 'ORG';
+  window.hreduAds = { ref: REF, click: v };                            // untuk debugging/tes
+
+  /* ---------- Tulis ulang link WhatsApp ---------- */
+  var REF_TAG_RE = /\s*\[Ref: [^\]]*\]\s*$/;
+  function rewrite(a) {
+    var href = a.getAttribute('href') || '';
+    if (!WA_RE.test(href)) return;
+    if (href.indexOf(encodeURIComponent('[Ref: ' + REF + ']')) !== -1) return;   // sudah berisi ref yang sama (idempoten)
+    var q = href.indexOf('?'), base = q === -1 ? href : href.slice(0, q), rest = q === -1 ? '' : href.slice(q + 1);
+    var parts = rest ? rest.split('&') : [], found = false;
+    for (var i = 0; i < parts.length; i++) {
+      if (parts[i].indexOf('text=') === 0) {
+        var t;
+        try { t = decodeURIComponent(parts[i].slice(5).replace(/\+/g, ' ')); } catch (e) { t = parts[i].slice(5); }
+        t = t.replace(REF_TAG_RE, '');
+        parts[i] = 'text=' + encodeURIComponent(t + ' [Ref: ' + REF + ']');
+        found = true;
+      }
+    }
+    if (!found) parts.push('text=' + encodeURIComponent('Halo HRedu [Ref: ' + REF + ']'));
+    a.setAttribute('href', base + '?' + parts.join('&'));
+    a.setAttribute('data-ref', REF);
+  }
+  function rewriteAll() {
+    var list = document.querySelectorAll('a[href*="wa.me/"], a[href*="api.whatsapp.com/"]');
+    for (var i = 0; i < list.length; i++) rewrite(list[i]);
+  }
+  function startObserver() {
+    rewriteAll();
+    if (!window.MutationObserver) return;
+    var timer = null;
+    new MutationObserver(function () {
+      clearTimeout(timer);
+      timer = setTimeout(rewriteAll, 50);                              // SPA-safe: node baru / href berubah
+    }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startObserver);
+  else startObserver();
+
+  /* ---------- Log klik + event konversi ---------- */
+  function wibIso() { return new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(0, 19) + '+07:00'; }
+  function waPosition(a) {
+    var all = document.querySelectorAll('a[href*="wa.me/"], a[href*="api.whatsapp.com/"]');
+    var idx = Array.prototype.indexOf.call(all, a) + 1;
+    var sec = a.closest ? a.closest('header,footer,section,aside,main') : null;
+    var where = sec ? (sec.tagName.toLowerCase() + (sec.id ? '#' + sec.id : '')) : 'body';
+    if (/float/.test(a.className || '')) where = 'floating';
+    return where + ' (#' + idx + ' dari ' + all.length + ')';
+  }
+  function logClick(a) {
+    var p = new URLSearchParams();
+    p.set('sumber', 'wa_click');
+    p.set('waktu', wibIso());
+    CLICK_KEYS.concat(UTM_KEYS).forEach(function (k) { p.set(k, v[k] || ''); });
+    p.set('ref', REF);
+    p.set('tombol', (a.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80));
+    p.set('posisi', waPosition(a));
+    p.set('url', location.href);
+    if (apsReady) {
+      var body = p.toString(), ok = false;
+      try { if (navigator.sendBeacon) ok = navigator.sendBeacon(APPS_SCRIPT_URL, new Blob([body], { type: 'application/x-www-form-urlencoded' })); } catch (e) {}
+      if (!ok) {
+        try { fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body: body }); } catch (e) {}
+      }
+    }
+    if (awReady) {
+      gtag('event', 'wa_click', { ref: REF });                         // event biasa (BUKAN konversi; tanpa send_to)
+    }
+  }
+  document.addEventListener('click', function (e) {                    // delegasi: tahan SPA & elemen dinamis
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || !WA_RE.test(a.getAttribute('href') || '')) return;
+    logClick(a);
+  }, true);
+})();
+</script>
+</head>
+<body>
+  <div class="policy-bar">
+    <div class="wrap">
+      <a href="./" aria-label="Kembali ke beranda"><img src="logo_hredu.png" width="170" height="48" alt="HRedu Global Mandiri"></a>
+      <a class="back" href="./">&larr; Kembali ke beranda</a>
+    </div>
+  </div>
+
+  <main class="policy">
+    <div class="wrap">
+      <article class="policy-card">
+        <h1>Kebijakan Privasi</h1>
+        <p class="updated">Terakhir diperbarui: 21 November 2026</p>
+
+        <h2>1. Siapa kami</h2>
+        <p><strong>LKP HRedu Global Mandiri</strong> (NPSN K9999147), Jl. Balai Rakyat Timur No. 25, Tugu Selatan, Koja, Jakarta Utara. WhatsApp 0851-7111-4889 (Senin&ndash;Sabtu 08.00&ndash;21.00). Email resmi untuk permintaan data: <a href="mailto:hredu.pusat@gmail.com">hredu.pusat@gmail.com</a>. Kebijakan ini berlaku untuk situs ai.hredu.id.</p>
+
+        <h2>2. Data yang kami kumpulkan</h2>
+        <ul>
+          <li><strong>Kode klik iklan Google Ads</strong> (<code>gclid</code>, <code>gbraid</code>, <code>wbraid</code>) dan <strong>parameter UTM</strong> (sumber, medium, kampanye, kata kunci, konten) yang ada di alamat halaman saat Anda datang dari iklan.</li>
+          <li><strong>Catatan klik tombol WhatsApp</strong>: waktu klik, kode referensi singkat (misalnya <code>AI-xxxxxxxx</code>), tombol yang diklik, dan alamat halaman. Catatan ini tidak berisi nama atau nomor Anda.</li>
+          <li><strong>Percakapan WhatsApp</strong> yang Anda mulai dengan kami, termasuk nama, nomor, dan isi pesan yang Anda kirim sendiri. Kode referensi ikut tertulis di pesan awal.</li>
+        </ul>
+        <p>Kami tidak meminta data sensitif lewat situs ini.</p>
+
+        <h2>3. Tujuan penggunaan</h2>
+        <ul>
+          <li>Mengukur efektivitas iklan kami.</li>
+          <li>Mengunggah konversi offline ke Google Ads (mencocokkan pendaftar dengan iklan yang diklik).</li>
+          <li>Menindaklanjuti pertanyaan dan pendaftaran Anda.</li>
+        </ul>
+
+        <h2>4. Cookie dan penyimpanan lokal</h2>
+        <p>Situs menyimpan kode klik dan UTM di cookie milik sendiri (first-party) dan <code>localStorage</code> browser dengan nama <code>hredu_ads</code> selama <strong>90 hari</strong>, agar kunjungan berikutnya tetap terhubung dengan iklan yang Anda klik. Situs juga memakai tag Google (lihat bagian 5), yang dapat menyetel cookie sendiri.</p>
+
+        <h2>5. Pihak ketiga: Google</h2>
+        <p>Kami memakai Google tag / Google Ads untuk mengukur iklan. Data terkait dapat diproses oleh Google. Lihat <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Kebijakan Privasi Google</a> dan atur personalisasi iklan Anda di <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">adssettings.google.com</a>.</p>
+
+        <h2>6. Penyimpanan dan akses</h2>
+        <p>Catatan klik dan data pendaftar disimpan di <strong>Google Sheets</strong> milik LKP dengan akses terbatas pada petugas yang berwenang. Percakapan WhatsApp tunduk pada kebijakan WhatsApp.</p>
+
+        <h2>7. Lama penyimpanan</h2>
+        <p>Cookie/localStorage: 90 hari. Catatan di Google Sheets: 12 bulan, setelah itu dihapus.</p>
+
+        <h2>8. Hak Anda</h2>
+        <p>Sesuai prinsip Undang-Undang No. 27 Tahun 2022 tentang Pelindungan Data Pribadi, Anda dapat meminta akses, perbaikan, atau penghapusan data pribadi Anda. Hubungi kami lewat WhatsApp 0851-7111-4889 atau email <a href="mailto:hredu.pusat@gmail.com">hredu.pusat@gmail.com</a> dan sebutkan kode referensi Anda bila ada.</p>
+
+        <h2>9. Cara menolak / berhenti dilacak</h2>
+        <ul>
+          <li>Hapus cookie dan data situs <code>ai.hredu.id</code> di pengaturan browser (ini juga menghapus <code>hredu_ads</code>).</li>
+          <li>Nonaktifkan atau blokir cookie pihak ketiga di browser, atau gunakan mode penyamaran.</li>
+          <li>Atur atau matikan personalisasi iklan di <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">adssettings.google.com</a>.</li>
+          <li>Anda tetap dapat menghubungi kami tanpa melalui tombol di situs ini.</li>
+        </ul>
+
+        <h2>10. Perubahan kebijakan</h2>
+        <p>Kebijakan ini dapat diperbarui. Tanggal pembaruan terakhir tertera di bagian atas halaman.</p>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="./">ai.hredu.id</a>
+        <a href="https://www.hredu.id/" target="_blank" rel="noopener noreferrer">www.hredu.id</a>
+        <a href="https://www.instagram.com/hredu.id/" target="_blank" rel="noopener noreferrer">@hredu.id</a>
+      </div>
+      <p class="footer-copy">LKP HRedu Global Mandiri · NPSN K9999147 · Terdaftar di Kemendikdasmen RI</p>
+    </div>
+  </footer>
+</body>
+</html>
